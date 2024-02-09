@@ -1,0 +1,16 @@
+version: '3'
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_PASSWORD: root
+      POSTGRES_USER: root
+      POSTGRES_DB: app_builder_api
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - app-builder-api:/var/lib/postgresql/data
+
+volumes:
+  app-builder-api:
