@@ -24,7 +24,7 @@ class UniqueEmailValidator extends ConstraintValidator
             $this->firebase->getFactory()->createAuth()->getUserByEmail($value);
             $this->context->buildViolation($constraint->message)
                 ->setParameter('{{ string }}', $value)
-                ->setCode('ALREADY_EXISTS')
+                ->setCode('EMAIL_ALREADY_EXISTS')
                 ->addViolation();
         } catch (UserNotFound $e) {
             // email is ok
