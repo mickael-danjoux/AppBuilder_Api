@@ -5,33 +5,49 @@ namespace App\DTO;
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Post;
-use App\Controller\Api\Authentication\RegistrationController;
+use App\Controller\Api\Authentication\RegistrationApiController;
+use App\Entity\User\User;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Validator\UniqueEmail as AppAssert;
-#[
-    ApiResource(
 
-        operations: [
-            new Post(
-                uriTemplate: '/registration',
-                controller: RegistrationController::class,
-                openapiContext: [
-                    'summary' => 'Register a user',
-                    'description' => ''
+#[ApiResource(
+    operations: [
+        new Post(
+            uriTemplate: '/registration',
+            controller: RegistrationApiController::class,
+            openapiContext: [
+                'summary' => 'Register a user',
+                'description' => '',
+                'responses' => [
+                    '201' => [
+                        'description' => 'User created successfully.',
+                        'content' => [
+                            'application/ld+json' => [
+                                'schema' => [
+                                    '$ref' => '#/components/schemas/User.jsonld',
+                                ],
+                            ],
+                            'application/json' => [
+                                'schema' => [
+                                    '$ref' => '#/components/schemas/User',
+                                ],
+                            ],
+
+                        ]
+                    ],
                 ],
-                name: 'api_registration',
-            ),
-        ]),
-
+            ],
+        ),
+    ]),
 ]
-class RegistrationDto
+class Registration
 {
-    #[ApiProperty(example: 'John')]
     #[Assert\NotBlank()]
+    #[ApiProperty(example: 'John', types: ["https://schema.org/givenName"])]
     private ?string $firstName = null;
 
-    #[ApiProperty(example: 'Doe')]
     #[Assert\NotBlank()]
+    #[ApiProperty(example: 'Doe', types: ["https://schema.org/familyName"])]
     private ?string $lastName = null;
 
     #[ApiProperty(example: 'john.doe@ecample.com')]
@@ -40,8 +56,8 @@ class RegistrationDto
     #[AppAssert\UniqueEmail]
     private ?string $email = null;
 
-    #[ApiProperty(example: 'qfTns8zm - dg7Ah')]
     #[Assert\NotBlank()]
+    #[ApiProperty(example: 'qfTns8zm-dg7Ah', types: ["https://schema.org/accessCode"])]
     private ?string $password = null;
 
 

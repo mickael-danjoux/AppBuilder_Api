@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\DTO\RegistrationDto;
+use App\DTO\Registration;
 use App\Entity\User\User;
 use App\Utils\Firebase;
 use Doctrine\ORM\EntityManagerInterface;
@@ -27,7 +27,7 @@ readonly class RegistrationService
      * @throws FirebaseException
      * @throws AuthException
      */
-    public function registerUser(RegistrationDto $dto): User
+    public function registerUser(Registration $dto): User
     {
         $firebaseAuth = $this->firebase->getFactory()->createAuth();
 

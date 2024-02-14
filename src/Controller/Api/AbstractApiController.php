@@ -3,6 +3,7 @@
 namespace App\Controller\Api;
 
 use ApiPlatform\Serializer\SerializerContextBuilderInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,6 +17,8 @@ class AbstractApiController extends AbstractController
 
     protected SerializerInterface $serializer;
 
+    protected LoggerInterface $logger;
+
     public function isValidEntity(object $entity): bool
     {
         $errors = $this->validator->validate($entity);
@@ -25,8 +28,8 @@ class AbstractApiController extends AbstractController
     public function createResourceResponse(object $data, ?array $groups = null): Response
     {
         $accept = $this->getAcceptData();
-        $data = $this->serializer->serialize($data, $accept['serialization'], $groups);
-        $response = new Response($data);
+        $result = $this->serializer->serialize($data, $accept['serialization'], ['groups' => $groups]);
+        $response = new Response($result);
         $response->headers->set('Content-Type', $accept['response']);
         return $response;
     }
@@ -53,6 +56,13 @@ class AbstractApiController extends AbstractController
     public function setSerializer(SerializerInterface $serializer): void
     {
         $this->serializer = $serializer;
+    }
+
+
+    #[Required]
+    public function setLogger(LoggerInterface $logger): void
+    {
+        $this->logger = $logger;
     }
 
 }

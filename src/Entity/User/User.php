@@ -8,8 +8,10 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use App\Repository\User\UserRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -18,38 +20,58 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Table(name: '`user`')]
 #[ApiResource(
     operations: [
-        new Get(),
+        new Get(
+            normalizationContext: [
+                'groups' => ['read:User:item']
+            ]
+        ),
         new GetCollection(),
         new Patch(
             denormalizationContext: [
                 'groups' => ['patch:User:item']
             ]
         ),
-    ]
+    ],
 )]
 #[UniqueEntity('email')]
-class User
+#[ORM\HasLifecycleCallbacks]
+class User implements UserInterface
 {
     #[ORM\Id]
     #[ORM\Column(length: 255)]
     #[Groups(['read:User:collection', 'read:User:item'])]
-    private ?string $id = null;
+    #[ApiProperty(example: 'BLar7YZ8FxVLBWXJ4z3UkNwwYMq1')]
+    protected ?string $id = null;
 
     #[ORM\Column(length: 64)]
     #[Groups(['read:User:collection', 'read:User:item', 'patch:User:item'])]
-    #[ApiProperty(example: 'John')]
-    private ?string $firstName = null;
+    #[ApiProperty(example: 'John', types: ["https://schema.org/givenName"])]
+    protected ?string $firstName = null;
 
     #[ORM\Column(length: 64)]
     #[Groups(['read:User:collection', 'read:User:item', 'patch:User:item'])]
-    #[ApiProperty(example: 'DOE')]
-    private ?string $lastName = null;
+    #[ApiProperty(example: 'Doe', types: ["https://schema.org/familyName"])]
+    protected ?string $lastName = null;
 
     #[ORM\Column(length: 255, unique: true)]
     #[Assert\Email()]
     #[Groups(['read:User:collection', 'read:User:item', 'patch:User:item'])]
     #[ApiProperty(example: 'john.doe@ecample.com')]
-    private ?string $email = null;
+    protected ?string $email = null;
+
+    #[ORM\Column]
+    #[Groups(['read:User:collection', 'read:User:item'])]
+    #[ApiProperty(example: '["ROLE_USER"]')]
+    protected array $roles = [];
+
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, options: ['default' => '2024-01-01'])]
+    #[Groups(['read:User:collection', 'read:User:item'])]
+    protected \DateTimeImmutable $createdAt;
+
+    #[ORM\Column(nullable: true)]
+    #[Groups(['read:User:collection', 'read:User:item'])]
+    protected ?\DateTime $updatedAt = null;
+
 
     /**
      * @param string|null $id
@@ -57,6 +79,8 @@ class User
     public function __construct(?string $id)
     {
         $this->id = $id;
+        $this->createdAt = new \DateTimeImmutable();
+
     }
 
 
@@ -101,4 +125,56 @@ class User
 
         return $this;
     }
+
+    public function getRoles(): array
+    {
+        $roles = $this->roles;
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
+    }
+
+    public function setRoles(array $roles): User
+    {
+        $this->roles = $roles;
+        return $this;
+    }
+
+    public function eraseCredentials(): void
+    {
+        // not needed for apps that do not check user passwords
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return $this->id;
+    }
+
+    public function getCreatedAt(): \DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $createdAt): void
+    {
+        $this->createdAt = $createdAt;
+    }
+
+    public function getUpdatedAt(): ?\DateTime
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?\DateTime $updatedAt): void
+    {
+        $this->updatedAt = $updatedAt;
+    }
+
+    #[ORM\PreUpdate]
+    public function preUpdate(): void
+    {
+        $this->updatedAt = new \DateTime();
+    }
+
 }

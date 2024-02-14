@@ -3,7 +3,7 @@
 namespace App\Controller\Api\Authentication;
 
 use App\Controller\Api\AbstractApiController;
-use App\DTO\RegistrationDto;
+use App\DTO\Registration;
 use App\Entity\User\User;
 use App\Services\RegistrationService;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,10 +13,10 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 #[AsController]
-class RegistrationController extends AbstractApiController
+class RegistrationApiController extends AbstractApiController
 {
 
-    public function __invoke(RegistrationDto $data, Request $request, RegistrationService $registrationService)
+    public function __invoke(Registration $data, Request $request, RegistrationService $registrationService)
     {
         if ($this->isValidEntity($data)) {
             $user = $registrationService->registerUser($data);
