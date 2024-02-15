@@ -7,6 +7,7 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
+use App\EventListener\UserListener;
 use App\Repository\User\UserRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -21,20 +22,23 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ApiResource(
     operations: [
         new Get(
-            normalizationContext: [
-                'groups' => ['read:User:item']
-            ]
+            normalizationContext: ['groups' => ['read:User:item']],
+            security: 'is_granted("ROLE_ADMIN") or  object == user'
         ),
-        new GetCollection(),
+        new GetCollection(
+            normalizationContext: ['groups' => ['read:User:item']],
+            security: 'is_granted("ROLE_ADMIN")'
+        ),
         new Patch(
-            denormalizationContext: [
-                'groups' => ['patch:User:item']
-            ]
+            normalizationContext: ['groups' => ['read:User:item']],
+            denormalizationContext: ['groups' => ['patch:User:item']],
+            security: 'is_granted("ROLE_ADMIN") or object == user'
         ),
     ],
 )]
 #[UniqueEntity('email')]
 #[ORM\HasLifecycleCallbacks]
+#[ORM\EntityListeners([UserListener::class])]
 class User implements UserInterface
 {
     #[ORM\Id]
@@ -102,18 +106,6 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getLastName(): ?string
-    {
-        return $this->lastName;
-    }
-
-    public function setLastName(string $lastName): static
-    {
-        $this->lastName = strtoupper($lastName);
-
-        return $this;
-    }
-
     public function getEmail(): ?string
     {
         return $this->email;
@@ -177,4 +169,20 @@ class User implements UserInterface
         $this->updatedAt = new \DateTime();
     }
 
+    public function getDisplayName(): string
+    {
+        return $this->firstName . ' ' . $this->getLastName();
+    }
+
+    public function getLastName(): ?string
+    {
+        return $this->lastName;
+    }
+
+    public function setLastName(string $lastName): static
+    {
+        $this->lastName = strtoupper($lastName);
+
+        return $this;
+    }
 }

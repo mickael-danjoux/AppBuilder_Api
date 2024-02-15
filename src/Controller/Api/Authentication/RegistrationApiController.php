@@ -3,7 +3,7 @@
 namespace App\Controller\Api\Authentication;
 
 use App\Controller\Api\AbstractApiController;
-use App\DTO\Registration;
+use App\ApiResources\Registration;
 use App\Entity\User\User;
 use App\Services\RegistrationService;
 use Symfony\Component\HttpFoundation\Request;

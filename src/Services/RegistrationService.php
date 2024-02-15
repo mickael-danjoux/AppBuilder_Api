@@ -2,18 +2,14 @@
 
 namespace App\Services;
 
-use App\DTO\Registration;
+use App\ApiResources\Registration;
 use App\Entity\User\User;
 use App\Utils\Firebase;
 use Doctrine\ORM\EntityManagerInterface;
-use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Exception\GuzzleException;
 use Kreait\Firebase\Exception\AuthException;
 use Kreait\Firebase\Exception\FirebaseException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use Symfony\Component\Validator\ConstraintViolation;
-use Symfony\Component\Validator\ConstraintViolationList;
 
 readonly class RegistrationService
 {

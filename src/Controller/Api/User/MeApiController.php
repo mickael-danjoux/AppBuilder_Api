@@ -3,7 +3,7 @@
 namespace App\Controller\Api\User;
 
 use App\Controller\Api\AbstractApiController;
-use App\DTO\Me;
+use App\ApiResources\Me;
 use App\Repository\User\UserRepository;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Response;

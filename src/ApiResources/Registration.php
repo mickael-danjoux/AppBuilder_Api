@@ -1,12 +1,11 @@
 <?php
 
-namespace App\DTO;
+namespace App\ApiResources;
 
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Post;
 use App\Controller\Api\Authentication\RegistrationApiController;
-use App\Entity\User\User;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Validator\UniqueEmail as AppAssert;
 

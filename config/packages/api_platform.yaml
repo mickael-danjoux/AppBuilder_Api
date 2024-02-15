@@ -22,4 +22,4 @@ api_platform:
     keep_legacy_inflector: false
     resource_class_directories:
         - '%kernel.project_dir%/src/Entity'
-        - '%kernel.project_dir%/src/DTO'
+        - '%kernel.project_dir%/src/ApiResources'
