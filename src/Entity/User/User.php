@@ -84,7 +84,7 @@ class User implements UserInterface
     #[Groups(['read:User:collection', 'read:User:item'])]
     protected ?\DateTime $updatedAt = null;
 
-    #[ORM\OneToMany(targetEntity: Device::class, mappedBy: 'owner', orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Device::class, orphanRemoval: true)]
     private Collection $devices;
 
 

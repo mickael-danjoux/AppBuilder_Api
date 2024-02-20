@@ -2,6 +2,7 @@
 
 namespace App\Security\Voter;
 
+use App\Entity\User\Device;
 use App\Entity\User\User;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -34,6 +35,7 @@ class IsOwnerOrAdminVoter extends Voter
                 return self::ACCESS_GRANTED;
             }
         }
+
 
         return self::ACCESS_ABSTAIN;
     }
