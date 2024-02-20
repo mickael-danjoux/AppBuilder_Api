@@ -59,35 +59,37 @@ class Registration
     #[ApiProperty(example: 'qfTns8zm-dg7Ah', types: ["https://schema.org/accessCode"])]
     private ?string $password = null;
 
-
-    public function getFirstName(): string
+    public function getFirstName(): ?string
     {
         return $this->firstName;
     }
 
-    public function setFirstName(string $firstName): void
+    public function setFirstName(string|null $firstName): self
     {
-        $this->firstName = ucfirst($firstName);
+        $this->firstName = $firstName;
+        return $this;
     }
 
-    public function getLastName(): string
+    public function getLastName(): ?string
     {
         return $this->lastName;
     }
 
-    public function setLastName(string $lastName): void
+    public function setLastName(string|null $lastName): self
     {
-        $this->lastName = strtoupper($lastName);
+        $this->lastName = $lastName;
+        return $this;
     }
 
-    public function getEmail(): string
+    public function getEmail(): ?string
     {
         return $this->email;
     }
 
-    public function setEmail(string $email): void
+    public function setEmail(string|null $email): self
     {
         $this->email = $email;
+        return $this;
     }
 
     public function getPassword(): ?string
@@ -95,14 +97,10 @@ class Registration
         return $this->password;
     }
 
-    public function setPassword(?string $password): void
+    public function setPassword(string|null $password): self
     {
         $this->password = $password;
-    }
-
-    public function getDisplayName(): string
-    {
-        return $this->firstName . ' ' . $this->lastName;
+        return $this;
     }
 
 }

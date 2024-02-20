@@ -9,6 +9,8 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use App\EventListener\UserListener;
 use App\Repository\User\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -23,10 +25,10 @@ use Symfony\Component\Validator\Constraints as Assert;
     operations: [
         new Get(
             normalizationContext: ['groups' => ['read:User:item']],
-            security: 'is_granted("ROLE_ADMIN") or  object == user'
+            security: 'is_granted("ROLE_ADMIN") or object == user'
         ),
         new GetCollection(
-            normalizationContext: ['groups' => ['read:User:item']],
+            normalizationContext: ['groups' => ['read:User:collection']],
             security: 'is_granted("ROLE_ADMIN")'
         ),
         new Patch(
@@ -41,26 +43,32 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\EntityListeners([UserListener::class])]
 class User implements UserInterface
 {
+
+
     #[ORM\Id]
     #[ORM\Column(length: 255)]
     #[Groups(['read:User:collection', 'read:User:item'])]
     #[ApiProperty(example: 'BLar7YZ8FxVLBWXJ4z3UkNwwYMq1')]
+    #[Assert\NotBlank()]
     protected ?string $id = null;
 
     #[ORM\Column(length: 64)]
     #[Groups(['read:User:collection', 'read:User:item', 'patch:User:item'])]
     #[ApiProperty(example: 'John', types: ["https://schema.org/givenName"])]
+    #[Assert\NotBlank()]
     protected ?string $firstName = null;
 
     #[ORM\Column(length: 64)]
     #[Groups(['read:User:collection', 'read:User:item', 'patch:User:item'])]
     #[ApiProperty(example: 'Doe', types: ["https://schema.org/familyName"])]
+    #[Assert\NotBlank()]
     protected ?string $lastName = null;
 
     #[ORM\Column(length: 255, unique: true)]
-    #[Assert\Email()]
     #[Groups(['read:User:collection', 'read:User:item', 'patch:User:item'])]
     #[ApiProperty(example: 'john.doe@ecample.com')]
+    #[Assert\NotBlank()]
+    #[Assert\Email]
     protected ?string $email = null;
 
     #[ORM\Column]
@@ -77,6 +85,8 @@ class User implements UserInterface
     protected ?\DateTime $updatedAt = null;
 
 
+
+
     /**
      * @param string|null $id
      */
@@ -84,7 +94,6 @@ class User implements UserInterface
     {
         $this->id = $id;
         $this->createdAt = new \DateTimeImmutable();
-
     }
 
 
@@ -169,9 +178,12 @@ class User implements UserInterface
         $this->updatedAt = new \DateTime();
     }
 
-    public function getDisplayName(): string
+    public function getDisplayName($inverse = false): string
     {
-        return $this->firstName . ' ' . $this->getLastName();
+        if ($inverse) {
+            return $this->lastName . ' ' . $this->firstName;
+        }
+        return $this->firstName . ' ' . $this->lastName;
     }
 
     public function getLastName(): ?string
@@ -185,4 +197,6 @@ class User implements UserInterface
 
         return $this;
     }
+
+
 }
