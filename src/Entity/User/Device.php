@@ -53,6 +53,10 @@ class Device
     #[Assert\NotBlank]
     private ?string $id = null;
 
+    #[ORM\ManyToOne(inversedBy: 'devices')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $owner = null;
+
 
     public function getId(): ?string
     {
@@ -62,6 +66,18 @@ class Device
     public function setId(string|null $id): self
     {
         $this->id = $id;
+        return $this;
+    }
+
+    public function getOwner(): ?User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?User $owner): static
+    {
+        $this->owner = $owner;
+
         return $this;
     }
 

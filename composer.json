@@ -10,7 +10,7 @@
         "api-platform/core": "^3.2",
         "doctrine/doctrine-bundle": "^2.11",
         "doctrine/doctrine-migrations-bundle": "^3.3",
-        "doctrine/orm": "^3.0",
+        "doctrine/orm": "2.18",
         "kreait/firebase-bundle": "^5.2",
         "kreait/firebase-php": "^7.0",
         "nelmio/cors-bundle": "^2.4",

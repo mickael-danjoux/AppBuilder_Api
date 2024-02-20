@@ -84,6 +84,9 @@ class User implements UserInterface
     #[Groups(['read:User:collection', 'read:User:item'])]
     protected ?\DateTime $updatedAt = null;
 
+    #[ORM\OneToMany(targetEntity: Device::class, mappedBy: 'owner', orphanRemoval: true)]
+    private Collection $devices;
+
 
 
 
@@ -94,6 +97,7 @@ class User implements UserInterface
     {
         $this->id = $id;
         $this->createdAt = new \DateTimeImmutable();
+        $this->devices = new ArrayCollection();
     }
 
 
@@ -194,6 +198,36 @@ class User implements UserInterface
     public function setLastName(string $lastName): static
     {
         $this->lastName = strtoupper($lastName);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Device>
+     */
+    public function getDevices(): Collection
+    {
+        return $this->devices;
+    }
+
+    public function addDevice(Device $device): static
+    {
+        if (!$this->devices->contains($device)) {
+            $this->devices->add($device);
+            $device->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDevice(Device $device): static
+    {
+        if ($this->devices->removeElement($device)) {
+            // set the owning side to null (unless already changed)
+            if ($device->getOwner() === $this) {
+                $device->setOwner(null);
+            }
+        }
 
         return $this;
     }
