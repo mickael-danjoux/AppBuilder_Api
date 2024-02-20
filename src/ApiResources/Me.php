@@ -20,12 +20,12 @@ use App\Controller\Api\User\MeApiController;
                         'content' => [
                             'application/ld+json' => [
                                 'schema' => [
-                                    '$ref' => '#/components/schemas/User.jsonld',
+//                                    '$ref' => '#/components/schemas/User.jsonld',
                                 ],
                             ],
                             'application/json' => [
                                 'schema' => [
-                                    '$ref' => '#/components/schemas/User',
+//                                    '$ref' => '#/components/schemas/User',
                                 ],
                             ],
 

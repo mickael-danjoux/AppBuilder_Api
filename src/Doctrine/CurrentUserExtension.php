@@ -6,10 +6,11 @@ use ApiPlatform\Doctrine\Orm\Extension\QueryCollectionExtensionInterface;
 use ApiPlatform\Doctrine\Orm\Extension\QueryItemExtensionInterface;
 use ApiPlatform\Doctrine\Orm\Util\QueryNameGeneratorInterface;
 use ApiPlatform\Metadata\Operation;
-use App\Entity\Offer;
+use App\Entity\Notification\UserNotification;
 use App\Entity\User\Device;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Bundle\SecurityBundle\Security;
+
 
 final readonly class CurrentUserExtension implements QueryCollectionExtensionInterface, QueryItemExtensionInterface
 {
@@ -29,17 +30,6 @@ final readonly class CurrentUserExtension implements QueryCollectionExtensionInt
         $this->addWhere($queryBuilder, $resourceClass);
     }
 
-    public function applyToItem(
-        QueryBuilder $queryBuilder,
-        QueryNameGeneratorInterface $queryNameGenerator,
-        string $resourceClass,
-        array $identifiers,
-        Operation $operation = null,
-        array $context = []
-    ): void {
-        $this->addWhere($queryBuilder, $resourceClass);
-    }
-
     private function addWhere(QueryBuilder $queryBuilder, string $resourceClass): void
     {
 
@@ -49,10 +39,25 @@ final readonly class CurrentUserExtension implements QueryCollectionExtensionInt
 
         $rootAlias = $queryBuilder->getRootAliases()[0];
         switch ($resourceClass) {
+            case UserNotification::class:
             case Device::class:
                 $queryBuilder->andWhere(sprintf('%s.owner = :current_user', $rootAlias))
                     ->setParameter('current_user', $user);
+                break;
+
+
 
         }
+    }
+
+    public function applyToItem(
+        QueryBuilder $queryBuilder,
+        QueryNameGeneratorInterface $queryNameGenerator,
+        string $resourceClass,
+        array $identifiers,
+        Operation $operation = null,
+        array $context = []
+    ): void {
+        $this->addWhere($queryBuilder, $resourceClass);
     }
 }

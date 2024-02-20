@@ -7,6 +7,7 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
+use App\Entity\Notification\UserNotification;
 use App\EventListener\UserListener;
 use App\Repository\User\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -87,6 +88,8 @@ class User implements UserInterface
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Device::class, orphanRemoval: true)]
     private Collection $devices;
 
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: UserNotification::class)]
+    private Collection $notifications;
 
 
 
@@ -98,6 +101,7 @@ class User implements UserInterface
         $this->id = $id;
         $this->createdAt = new \DateTimeImmutable();
         $this->devices = new ArrayCollection();
+        $this->notifications = new ArrayCollection();
     }
 
 
@@ -226,6 +230,36 @@ class User implements UserInterface
             // set the owning side to null (unless already changed)
             if ($device->getOwner() === $this) {
                 $device->setOwner(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, UserNotification>
+     */
+    public function getNotifications(): Collection
+    {
+        return $this->notifications;
+    }
+
+    public function addNotification(UserNotification $notification): static
+    {
+        if (!$this->notifications->contains($notification)) {
+            $this->notifications->add($notification);
+            $notification->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeNotification(UserNotification $notification): static
+    {
+        if ($this->notifications->removeElement($notification)) {
+            // set the owning side to null (unless already changed)
+            if ($notification->getOwner() === $this) {
+                $notification->setOwner(null);
             }
         }
 
