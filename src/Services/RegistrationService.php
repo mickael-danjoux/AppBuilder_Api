@@ -31,7 +31,7 @@ readonly class RegistrationService
         try {
             $createdUser = $firebaseAuth->createUser([
                 'email' => $dto->getEmail(),
-                'displayName' => $dto->getDisplayName(),
+                'displayName' => $dto->getFirstName() . ' ' .$dto->getLastName(),
                 'password' => $dto->getPassword()
             ]);
 

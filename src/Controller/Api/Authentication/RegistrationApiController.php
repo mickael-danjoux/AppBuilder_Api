@@ -20,7 +20,7 @@ class RegistrationApiController extends AbstractApiController
     {
         if ($this->isValidEntity($data)) {
             $user = $registrationService->registerUser($data);
-            return $this->createResourceResponse($user, ['read:User:item']);
+            return $this->createResourceResponse($user, ['read:User:item'], Response::HTTP_CREATED);
         }
 
         return $data;

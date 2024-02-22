@@ -13,9 +13,9 @@ use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
 #[AsEventListener(event: 'postUpdate', method: 'postUpdate')]
 #[AsEventListener(event: 'postPersist', method: 'postPersist')]
+#[AsEventListener(event: 'postRemove', method: 'postRemove')]
 final readonly class UserListener
 {
-
 
     public function __construct(
         private Firebase $firebase,
@@ -48,9 +48,22 @@ final readonly class UserListener
     public function postPersist(User $user): void
     {
         try {
-            $this->getAuth()->sendEmailVerificationLink($user->getEmail());
+            if ($_SERVER['APP_ENV'] !== 'test') {
+                $this->getAuth()->sendEmailVerificationLink($user->getEmail());
+            }
         } catch (\Exception $e) {
             $this->logger->critical('Error during sending Firebase Validation Email: ' . $e->getMessage(), [
+                'error' => $e
+            ]);
+        }
+    }
+
+    public function postRemove(User $user): void
+    {
+        try {
+            $this->getAuth()->deleteUser($user->getId());
+        } catch (\Exception $e) {
+            $this->logger->critical('Error during removing Firebase user: ' . $e->getMessage(), [
                 'error' => $e
             ]);
         }

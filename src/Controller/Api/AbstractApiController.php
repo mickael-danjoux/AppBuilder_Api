@@ -25,11 +25,12 @@ class AbstractApiController extends AbstractController
         return !count($errors) > 0;
     }
 
-    public function createResourceResponse(object $data, ?array $groups = null): Response
+    public function createResourceResponse(object $data, ?array $groups = null, int $statusCode = Response::HTTP_OK): Response
     {
         $accept = $this->getAcceptData();
         $result = $this->serializer->serialize($data, $accept['serialization'], ['groups' => $groups]);
         $response = new Response($result);
+        $response->setStatusCode($statusCode);
         $response->headers->set('Content-Type', $accept['response']);
         return $response;
     }

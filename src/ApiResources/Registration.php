@@ -65,7 +65,7 @@ class Registration
 
     public function setFirstName(string|null $firstName): self
     {
-        $this->firstName = $firstName;
+        $this->firstName = ucfirst($firstName);
         return $this;
     }
 
@@ -76,7 +76,7 @@ class Registration
 
     public function setLastName(string|null $lastName): self
     {
-        $this->lastName = $lastName;
+        $this->lastName = strtoupper($lastName);
         return $this;
     }
 
