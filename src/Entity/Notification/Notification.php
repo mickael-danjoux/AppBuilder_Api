@@ -3,16 +3,12 @@
 namespace App\Entity\Notification;
 
 use ApiPlatform\Metadata\ApiProperty;
-use ApiPlatform\OpenApi\Model\Schema;
-use App\ApiResources\NotificationData;
 use App\Repository\Notification\NotificationRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Nelmio\ApiDocBundle\Annotation\Model;
 use Symfony\Component\Serializer\Annotation\Groups;
-use OpenApi\Attributes as OA;
 
 #[ORM\Entity(repositoryClass: NotificationRepository::class)]
 class Notification
@@ -38,7 +34,8 @@ class Notification
     #[Groups(['read:Notification:item:public'])]
     #[ApiProperty(
         openapiContext: [
-            'items' => ['$ref' => '#/components/schemas/NotificationData'],
+            'type' => 'object',
+            '$ref' => '#/components/schemas/NotificationData',
         ]
     )]
     private array $data = [];

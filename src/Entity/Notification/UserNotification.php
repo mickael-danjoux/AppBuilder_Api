@@ -4,7 +4,10 @@ namespace App\Entity\Notification;
 
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use App\Controller\Api\Notification\ReadNotificationController;
 use App\Entity\User\User;
 use App\Repository\Notification\UserNotificationRepository;
 use Doctrine\DBAL\Types\Types;
@@ -17,9 +20,17 @@ use Symfony\Component\Serializer\Annotation\Groups;
     operations: [
         new GetCollection(
             order: ['notification.createdAt' => 'DESC'],
-            normalizationContext: ['groups' => ['read:UserNotification:item', 'read:Notification:item:public']]
+        ),
+        new Get(),
+        new Patch(
+            uriTemplate: '/user_notifications/{id}/read',
+            controller: ReadNotificationController::class,
+            openapiContext: [
+                'summary' => 'Set notification read.'
+            ],
         )
-    ]
+    ],
+    normalizationContext: ['groups' => ['read:UserNotification:item', 'read:Notification:item:public']]
 )]
 class UserNotification
 {
@@ -27,7 +38,7 @@ class UserNotification
     #[ORM\GeneratedValue]
     #[ORM\Column]
     #[Groups(['read:UserNotification:item'])]
-    #[ApiProperty(example: 24,  )]
+    #[ApiProperty(example: 24)]
     private ?int $id = null;
 
     #[ORM\Column(nullable: true)]

@@ -14,7 +14,7 @@ class MeApiController extends AbstractApiController
 {
 
 
-    public function __invoke(Me $data, Security $security, UserRepository $userRepository): Response
+    public function __invoke( Security $security, UserRepository $userRepository): Response
     {
         $user = $security->getUser();
         if (!$user) {
@@ -22,7 +22,7 @@ class MeApiController extends AbstractApiController
         }
         return $this->createResourceResponse(
             $userRepository->findOneById($user->getUserIdentifier()),
-            ['read:User:item']
+            ['read:User:item', 'read:User:item:private']
         );
 
     }

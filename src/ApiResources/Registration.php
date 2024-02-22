@@ -23,15 +23,14 @@ use App\Validator\UniqueEmail as AppAssert;
                         'content' => [
                             'application/ld+json' => [
                                 'schema' => [
-                                    '$ref' => '#/components/schemas/User.jsonld',
+                                    '$ref' => '#/components/schemas/User.jsonld-read.User.item',
                                 ],
                             ],
                             'application/json' => [
                                 'schema' => [
-                                    '$ref' => '#/components/schemas/User',
+                                    '$ref' => '#/components/schemas/User-read.User.item',
                                 ],
                             ],
-
                         ]
                     ],
                 ],

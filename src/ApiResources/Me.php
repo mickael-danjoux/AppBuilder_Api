@@ -5,6 +5,7 @@ namespace App\ApiResources;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use App\Controller\Api\User\MeApiController;
+use App\Entity\User\User;
 
 #[ApiResource(
     operations: [
@@ -20,24 +21,24 @@ use App\Controller\Api\User\MeApiController;
                         'content' => [
                             'application/ld+json' => [
                                 'schema' => [
-//                                    '$ref' => '#/components/schemas/User.jsonld',
+                                    '$ref' => '#/components/schemas/Me.jsonld-read.User.item_read.User.item.private',
                                 ],
                             ],
                             'application/json' => [
                                 'schema' => [
-//                                    '$ref' => '#/components/schemas/User',
+                                    '$ref' => '#/components/schemas/Me-read.User.item_read.User.item.private',
                                 ],
                             ],
-
                         ]
                     ],
                 ],
             ],
-            read: false,
+            normalizationContext: ['groups' => ['read:User:item', 'read:User:item:private']],
+            read: false
         ),
     ])
 ]
-class Me
+class Me extends User
 {
 
 }

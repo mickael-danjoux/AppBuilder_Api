@@ -12,6 +12,7 @@ use App\EventListener\UserListener;
 use App\Repository\User\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -90,6 +91,7 @@ class User implements UserInterface
 
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: UserNotification::class)]
     private Collection $notifications;
+
 
 
 
@@ -264,6 +266,14 @@ class User implements UserInterface
         }
 
         return $this;
+    }
+
+    #[Groups('read:User:item:private')]
+    public function getUnreadNotifications(): ArrayCollection|Collection
+    {
+        $criteria = Criteria::create()
+            ->andWhere(Criteria::expr()->isNull('readAt'));
+        return $this->notifications->matching($criteria);
     }
 
 
