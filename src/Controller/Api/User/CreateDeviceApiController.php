@@ -8,9 +8,10 @@ use Symfony\Bundle\SecurityBundle\Security;
 
 class CreateDeviceApiController extends AbstractApiController
 {
-    public function __invoke(Device $data, Security $security)
+    public function __invoke(Device $data, Security $security): Device
     {
         $data->setOwner($security->getUser());
+        return $data;
     }
 
 

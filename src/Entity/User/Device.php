@@ -50,6 +50,11 @@ class Device
     #[ORM\JoinColumn(nullable: false)]
     private ?User $owner = null;
 
+    #[ORM\Column(length: 16)]
+    #[ApiProperty(example: 'ios')]
+    #[Groups(['read:Device:item', 'create:Device:item'])]
+    private ?string $platform = null;
+
 
     public function getId(): ?string
     {
@@ -70,6 +75,18 @@ class Device
     public function setOwner(?User $owner): static
     {
         $this->owner = $owner;
+
+        return $this;
+    }
+
+    public function getPlatform(): ?string
+    {
+        return $this->platform;
+    }
+
+    public function setPlatform(string $platform): static
+    {
+        $this->platform = $platform;
 
         return $this;
     }
