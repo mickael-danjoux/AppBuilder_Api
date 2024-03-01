@@ -69,4 +69,21 @@ readonly class FirebaseTestUser
         ];
     }
 
+    public function getAuthenticatedTestUser(): array
+    {
+        $faker = UserFactory::faker();
+        $email = $faker->email();
+        $password = $faker->password();
+        $f = $this->firebase->getFactory()->createAuth();
+        $firebaseUser = $f->createUserWithEmailAndPassword($email, $password);
+        $token = $f->signInWithEmailAndPassword($email, $password)->idToken();
+        return [
+            'user' => UserFactory::createOne([
+                'id' => $firebaseUser->uid,
+                'email' => $email,
+            ])->object(),
+            'token' => $token
+        ];
+    }
+
 }

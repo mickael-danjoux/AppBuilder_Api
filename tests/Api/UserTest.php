@@ -3,13 +3,10 @@
 namespace App\Tests\Api;
 
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
-use App\ApiResources\Registration;
 use App\Entity\User\User;
-use App\Factory\Notification\NotificationFactory;
 use App\Factory\Notification\UserNotificationFactory;
 use App\Factory\User\DeviceFactory;
 use App\Factory\User\UserFactory;
-use App\Utils\Firebase\Firebase;
 use App\Utils\Firebase\FirebaseTestUser;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,7 +17,7 @@ use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Zenstruck\Foundry\Test\Factories;
 
-class UserCrudTest extends ApiTestCase
+class UserTest extends ApiTestCase
 {
     use Factories;
 
@@ -119,14 +116,6 @@ class UserCrudTest extends ApiTestCase
 
     }
 
-    private function getAuthToken(string $email, string $password): string
-    {
-        /** @var Firebase $firebase */
-        $firebase = static::getContainer()->get('App\Utils\Firebase\Firebase');
-        $result = $firebase->getFactory()->createAuth()->signInWithEmailAndPassword($email, $password);
-        return $result->idToken();
-    }
-
 
     /**
      * @group test-user-crud
@@ -144,27 +133,21 @@ class UserCrudTest extends ApiTestCase
      */
     public function testRemoveUser(): void
     {
-        $faker = UserFactory::faker();
-        $email = $faker->email();
-        $password = $faker->password();
 
-        $firebase = static::getContainer()->get('App\Utils\Firebase\Firebase');
-        $firebaseUser = $firebase->getFactory()->createAuth()->createUserWithEmailAndPassword($email, $password);
-        $user = UserFactory::createOne([
-            'id' => $firebaseUser->uid,
-            'email' => $email,
-        ]);
 
-        DeviceFactory::createMany(3,['owner' => $user]);
+        $firebase = static::getContainer()->get('App\Utils\Firebase\FirebaseTestUser');
+        $data = $firebase->getAuthenticatedTestUser();
+
+        DeviceFactory::createMany(3,['owner' => $data['user']]);
         UserNotificationFactory::createMany(3,[
-            'owner' => $user
+            'owner' => $data['user']
         ]);
 
-        $id = $user->getId();
+        $id = $data['user']->getId();
 
         $headers = [
             'Content-Type' => 'application/merge-patch+json',
-            'Authorization' => 'Bearer ' . $this->getAuthToken($email, $password)
+            'Authorization' => 'Bearer ' . $data['token']
         ];
         $iri = $this->findIriBy(User::class, ['id' => $id]);
 

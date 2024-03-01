@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Zenstruck\Foundry\Test\Factories;
 
-class DeviceCrudTest extends ApiTestCase
+class DeviceTest extends ApiTestCase
 {
     use Factories;
 
