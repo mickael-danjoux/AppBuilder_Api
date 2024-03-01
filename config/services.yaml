@@ -23,11 +23,18 @@ services:
     validator.unique_email:
         class: 'App\Validator\UniqueEmail\UniqueEmailValidator'
         arguments:
-            - '@App\Utils\Firebase'
+            - '@App\Utils\Firebase\Firebase'
         public: true
 
     App\EventListener\UserListener:
         tags: [ 'doctrine.orm.entity_listener' ]
+    App\EventListener\UserNotificationListener:
+        tags: [ 'doctrine.orm.entity_listener' ]
+
+    App\Utils\Firebase\FirebaseTestUser:
+        public: true
+    App\Utils\Firebase\Firebase:
+        public: true
 
     App\Doctrine\CurrentUserExtension:
         tags:

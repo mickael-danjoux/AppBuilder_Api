@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Tests\Factory\User;
+namespace App\Factory\User;
 
 use App\Entity\User\User;
+use App\Factory\Notification\UserNotificationFactory;
 use App\Repository\User\UserRepository;
 use Zenstruck\Foundry\ModelFactory;
 use Zenstruck\Foundry\Proxy;
@@ -43,8 +44,9 @@ final class UserFactory extends ModelFactory
     protected function getDefaults(): array
     {
         return [
+            'id' => self::faker()->uuid(),
             'createdAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
-            'email' => self::faker()->text(255),
+            'email' => self::faker()->email(),
             'firstName' => self::faker()->firstName(),
             'lastName' => self::faker()->lastName(),
             'roles' => [],

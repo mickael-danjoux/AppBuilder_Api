@@ -21,7 +21,6 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
-
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[ApiResource(
@@ -39,11 +38,8 @@ use Symfony\Component\Validator\Constraints as Assert;
             denormalizationContext: ['groups' => ['patch:User:item']],
             security: 'is_granted("ROLE_ADMIN") or object == user'
         ),
-        new Delete(
-            security: 'is_granted("ROLE_ADMIN") or object == user'
-        ),
-    ],
-)]
+        new Delete(security: 'is_granted("ROLE_ADMIN") or object == user'),
+    ])]
 #[UniqueEntity('email')]
 #[ORM\HasLifecycleCallbacks]
 #[ORM\EntityListeners([UserListener::class])]
@@ -90,13 +86,11 @@ class User implements UserInterface
     #[Groups(['read:User:collection', 'read:User:item'])]
     protected ?\DateTime $updatedAt = null;
 
-    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Device::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Device::class, cascade: ['remove'], orphanRemoval: true)]
     private Collection $devices;
 
-    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: UserNotification::class)]
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: UserNotification::class, cascade: ['remove'])]
     private Collection $notifications;
-
-
 
 
     /**
@@ -125,7 +119,6 @@ class User implements UserInterface
     public function setFirstName(string $firstName): static
     {
         $this->firstName = ucfirst($firstName);
-
         return $this;
     }
 
@@ -137,7 +130,6 @@ class User implements UserInterface
     public function setEmail(string $email): static
     {
         $this->email = strtolower($email);
-
         return $this;
     }
 
@@ -146,7 +138,6 @@ class User implements UserInterface
         $roles = $this->roles;
         // guarantee every user at least has ROLE_USER
         $roles[] = 'ROLE_USER';
-
         return array_unique($roles);
     }
 
@@ -208,7 +199,6 @@ class User implements UserInterface
     public function setLastName(string $lastName): static
     {
         $this->lastName = strtoupper($lastName);
-
         return $this;
     }
 
@@ -226,7 +216,6 @@ class User implements UserInterface
             $this->devices->add($device);
             $device->setOwner($this);
         }
-
         return $this;
     }
 
@@ -238,7 +227,6 @@ class User implements UserInterface
                 $device->setOwner(null);
             }
         }
-
         return $this;
     }
 
@@ -256,7 +244,6 @@ class User implements UserInterface
             $this->notifications->add($notification);
             $notification->setOwner($this);
         }
-
         return $this;
     }
 
@@ -268,15 +255,13 @@ class User implements UserInterface
                 $notification->setOwner(null);
             }
         }
-
         return $this;
     }
 
     #[Groups('read:User:item:private')]
     public function getUnreadNotifications(): ArrayCollection|Collection
     {
-        $criteria = Criteria::create()
-            ->andWhere(Criteria::expr()->isNull('readAt'));
+        $criteria = Criteria::create()->andWhere(Criteria::expr()->isNull('readAt'));
         return $this->notifications->matching($criteria);
     }
 

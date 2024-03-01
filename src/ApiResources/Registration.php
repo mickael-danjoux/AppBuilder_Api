@@ -15,7 +15,7 @@ use App\Validator\UniqueEmail as AppAssert;
             uriTemplate: '/registration',
             controller: RegistrationApiController::class,
             openapiContext: [
-                'summary' => 'Register a user',
+                'summary' => 'Register a user with email',
                 'description' => '',
                 'responses' => [
                     '201' => [

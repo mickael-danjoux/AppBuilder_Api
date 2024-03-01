@@ -3,6 +3,7 @@
 namespace App\Controller\Api;
 
 use ApiPlatform\Serializer\SerializerContextBuilderInterface;
+use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,6 +19,8 @@ class AbstractApiController extends AbstractController
     protected SerializerInterface $serializer;
 
     protected LoggerInterface $logger;
+
+    protected EntityManagerInterface $em;
 
     public function isValidEntity(object $entity): bool
     {
@@ -59,11 +62,16 @@ class AbstractApiController extends AbstractController
         $this->serializer = $serializer;
     }
 
-
     #[Required]
     public function setLogger(LoggerInterface $logger): void
     {
         $this->logger = $logger;
+    }
+
+    #[Required]
+    public function setEntityManager(EntityManagerInterface $em): void
+    {
+        $this->em = $em;
     }
 
 }

@@ -8,6 +8,7 @@ use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
+use App\Controller\Api\User\ClearDeviceApiController;
 use App\Controller\Api\User\CreateDeviceApiController;
 use App\Repository\User\DeviceRepository;
 use Doctrine\ORM\Mapping as ORM;
@@ -20,22 +21,28 @@ use Symfony\Component\Validator\Constraints as Assert;
     operations: [
         new Post(
             controller: CreateDeviceApiController::class,
-            openapiContext: ['summary' => 'Create Device (current user)',],
+            openapiContext: ['summary' => 'Create Device (current user)'],
             normalizationContext: ['groups' => ['read:Device:item']],
-            denormalizationContext: ['groups' => ['create:Device:item']]
+            denormalizationContext: ['groups' => ['create:Device:item']],
+            security: 'is_granted("ROLE_USER")'
         ),
         new GetCollection(
             openapiContext: ['summary' => 'Retrieves the collection of Device resources. (current user)'],
-            paginationEnabled: false,
-            normalizationContext: ['groups' => ['read:Device:item']]
+            paginationEnabled: false, normalizationContext: ['groups' => ['read:Device:item']],
+            security: 'is_granted("ROLE_USER")'
         ),
         new Get(
             openapiContext: ['summary' => 'Retrieves a Device resource.'],
-            normalizationContext: ['groups' => ['read:Device:item']]
+            normalizationContext: ['groups' => ['read:Device:item']],
+            security: 'is_granted("ROLE_USER")'
         ),
-        new Delete(),
-    ]
-)]
+        new Delete(security: 'is_granted("ROLE_ADMIN") or object.getOwner() == user'),
+        new Delete(
+            uriTemplate: '/devices_clear',
+            controller: ClearDeviceApiController::class,
+            security: 'is_granted("ROLE_USER")'
+        ),
+    ])]
 #[UniqueEntity('id')]
 class Device
 {
@@ -75,7 +82,6 @@ class Device
     public function setOwner(?User $owner): static
     {
         $this->owner = $owner;
-
         return $this;
     }
 
@@ -87,7 +93,6 @@ class Device
     public function setPlatform(string $platform): static
     {
         $this->platform = $platform;
-
         return $this;
     }
 

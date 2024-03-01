@@ -15,6 +15,10 @@ All required configs and packages for starting an API for mobile apps.
 symfony composer install
 ```
 
+### Configure ENV
+- Create a ``.env.local`` file and set variables.
+- Add ``appbuilder-firebase.json`` file in `/config/credentials` to enable Firebase.
+
 ### Start server
 
 Let’s run the symfony server! It will also run the `docker-compose.dev.yml`.
@@ -35,6 +39,7 @@ docker-compose -f docker-compose.dev.yml down
 ### Tests
 
 - User CRUD 
+- Device CRUD
 
 
 ```shell

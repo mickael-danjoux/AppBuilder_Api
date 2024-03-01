@@ -2,7 +2,7 @@
 
 namespace App\Validator\UniqueEmail;
 
-use App\Utils\Firebase;
+use App\Utils\Firebase\Firebase;
 use Kreait\Firebase\Exception\Auth\UserNotFound;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;

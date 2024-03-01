@@ -23,6 +23,8 @@ class FirebaseAuthenticator extends AbstractAuthenticator
 {
     public function __construct(
         private readonly Auth $auth,
+        private readonly UserRepository $userRepo,
+        private readonly EntityManagerInterface $em
     ) {
     }
 
@@ -45,7 +47,19 @@ class FirebaseAuthenticator extends AbstractAuthenticator
             throw new Exception($e->getMessage());
         }
         $data = $verifiedIdToken->claims();
-
+        $useExist = $this->userRepo->findOneById($data->get('user_id'));
+        if (!$useExist) {
+            $firebaseUser = $this->auth->getUser($data->get('user_id'));
+            $email = $firebaseUser->email;
+            // No email -> External Provider
+            if($email === null){
+                $email = $firebaseUser->providerData['email'];
+            }
+            $user = new User($data->get('user_id'));
+            $user->setEmail($email)->setFirstName('-')->setLastName('-');
+            $this->em->persist($user);
+            $this->em->flush();
+        }
         return new SelfValidatingPassport(new UserBadge($data->get('user_id')));
     }
 
@@ -59,11 +73,7 @@ class FirebaseAuthenticator extends AbstractAuthenticator
         $data = [
             'message' => strtr($exception->getMessageKey(), $exception->getMessageData())
         ];
-
         return new JsonResponse($data,
-            ($exception->getCode() === Response::HTTP_FORBIDDEN)
-                ? Response::HTTP_FORBIDDEN
-                : Response::HTTP_UNAUTHORIZED
-        );
+            ($exception->getCode() === Response::HTTP_FORBIDDEN) ? Response::HTTP_FORBIDDEN : Response::HTTP_UNAUTHORIZED);
     }
 }

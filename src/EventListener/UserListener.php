@@ -3,13 +3,12 @@
 namespace App\EventListener;
 
 use App\Entity\User\User;
-use App\Utils\Firebase;
+use App\Utils\Firebase\Firebase;
 use Kreait\Firebase\Contract\Auth;
 use Kreait\Firebase\Exception\AuthException;
 use Kreait\Firebase\Exception\FirebaseException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
-
 
 #[AsEventListener(event: 'postUpdate', method: 'postUpdate')]
 #[AsEventListener(event: 'postPersist', method: 'postPersist')]
@@ -23,11 +22,13 @@ final readonly class UserListener
     ) {
     }
 
-    /**
-     * @throws AuthException
-     * @throws FirebaseException
-     */
+
     public function postUpdate(User $user): void
+    {
+        $this->updateFirebaseUser($user);
+    }
+
+    private function updateFirebaseUser(User $user): void
     {
         try {
             $this->getAuth()->updateUser($user->getId(), [
@@ -49,7 +50,9 @@ final readonly class UserListener
     {
         try {
             if ($_SERVER['APP_ENV'] !== 'test') {
-                $this->getAuth()->sendEmailVerificationLink($user->getEmail());
+                if (!$this->getAuth()->getUser($user->getId())->emailVerified) {
+                    $this->getAuth()->sendEmailVerificationLink($user->getEmail());
+                }
             }
         } catch (\Exception $e) {
             $this->logger->critical('Error during sending Firebase Validation Email: ' . $e->getMessage(), [
@@ -58,6 +61,10 @@ final readonly class UserListener
         }
     }
 
+    /**
+     * @throws AuthException
+     * @throws FirebaseException
+     */
     public function postRemove(User $user): void
     {
         try {

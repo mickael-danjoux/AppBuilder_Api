@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Utils;
+namespace App\Utils\Firebase;
 
 use Kreait\Firebase\Factory;
 use Symfony\Component\HttpKernel\KernelInterface;

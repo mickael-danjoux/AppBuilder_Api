@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\ApiResources\Registration;
 use App\Entity\User\User;
-use App\Utils\Firebase;
+use App\Utils\Firebase\Firebase;
 use Doctrine\ORM\EntityManagerInterface;
 use Kreait\Firebase\Exception\AuthException;
 use Kreait\Firebase\Exception\FirebaseException;
@@ -26,12 +26,11 @@ readonly class RegistrationService
     public function registerUser(Registration $dto): User
     {
         $firebaseAuth = $this->firebase->getFactory()->createAuth();
-
         // Create User in firebase
         try {
             $createdUser = $firebaseAuth->createUser([
                 'email' => $dto->getEmail(),
-                'displayName' => $dto->getFirstName() . ' ' .$dto->getLastName(),
+                'displayName' => $dto->getFirstName() . ' ' . $dto->getLastName(),
                 'password' => $dto->getPassword()
             ]);
 
@@ -39,9 +38,8 @@ readonly class RegistrationService
 
             throw new HttpException(Response::HTTP_BAD_REQUEST);
         }
-
         // Create User in App DB
-        try{
+        try {
             $user = new User($createdUser->uid);
             $user->setFirstName($dto->getFirstName())
                 ->setLastName($dto->getLastName())
@@ -51,7 +49,7 @@ readonly class RegistrationService
             $this->em->flush();
 
             return $user;
-        }catch (\Exception $exception){
+        } catch (\Exception $exception) {
             // Rollback Firebase if error
             $firebaseAuth->deleteUser($createdUser->uid);
             throw $exception;

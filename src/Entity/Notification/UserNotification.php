@@ -9,6 +9,7 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use App\Controller\Api\Notification\ReadNotificationController;
 use App\Entity\User\User;
+use App\EventListener\UserNotificationListener;
 use App\Repository\Notification\UserNotificationRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -32,6 +33,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
     ],
     normalizationContext: ['groups' => ['read:UserNotification:item', 'read:Notification:item:public']]
 )]
+#[ORM\EntityListeners([UserNotificationListener::class])]
 class UserNotification
 {
     #[ORM\Id]

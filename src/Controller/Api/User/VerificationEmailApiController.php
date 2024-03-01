@@ -4,7 +4,7 @@ namespace App\Controller\Api\User;
 
 use App\Controller\Api\AbstractApiController;
 use App\Repository\User\UserRepository;
-use App\Utils\Firebase;
+use App\Utils\Firebase\Firebase;
 use Symfony\Component\HttpFoundation\Response;
 
 class VerificationEmailApiController extends AbstractApiController
